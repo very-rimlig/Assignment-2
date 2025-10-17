@@ -37,6 +37,8 @@ fetch("https://www.themealdb.com/api/json/v1/1/search.php?f=a")
 så att måltider på alla bokstäver hämtas och för det behöver jag plocka in resultat
 från lika många url:er som alfabetet, därför skapar jag en funktion*/
 
+/*här gör jag jobbet men skriver först ut alla rätter i bokstavsordning och sedan de fem första, men inom funktionen i en if-sats
+
 const allMeals = []; //skapar en variabel/en tom lista som ska fyllas på med alla rätter oavsett första bokstav
 const letters = "abcdefghijklmnopqrstuvwxyz".split("");
 
@@ -49,6 +51,36 @@ async function fetchAllaRatter() {
     }
   }
   allMeals.forEach(meal => console.log(meal.strMeal));
+  allMeals.sort((a, b) => a.strMeal.localeCompare(b.strMeal));
+  const forstaFem = allMeals.slice(0, 5);
+  forstaFem.forEach(meal => console.log(meal.strMeal));
 }
 
 fetchAllaRatter();
+*/
+
+const letters = "abcdefghijklmnopqrstuvwxyz".split("");
+
+// Funktion som hämtar alla rätter
+async function fetchAllaRatter() {
+  const allMeals = []; // flyttad in här för att hålla det rent
+  for (const letter of letters) {
+    const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${letter}`);
+    const data = await res.json();
+    if (data.meals) {
+      allMeals.push(...data.meals);
+    }
+  }
+  return allMeals; // 👈 returnerar listan med alla rätter
+}
+
+// Anropa funktionen och hantera resultaten utanför
+fetchAllaRatter().then(allMeals => {
+  console.log("Det här är alla rätter:");
+  allMeals.forEach(meal => console.log(meal.strMeal));
+
+  console.log("\nDet här är de fem första rätterna i bokstavsordning:");
+  const sorterade = allMeals.sort((a, b) => a.strMeal.localeCompare(b.strMeal));
+  const forstaFem = sorterade.slice(0, 5);
+  forstaFem.forEach(meal => console.log(meal.strMeal));
+});
