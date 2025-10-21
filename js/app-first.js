@@ -15,8 +15,7 @@ async function fetchAllaRatter() {
 
 // funktion som skriver ut de fem första rätterna i listan som är i bokstavsordning
 function printFirstFiveMeals(allMeals) {
-  // icke-muterande sortering (tar en kopia först)
-  const sorterade = [...allMeals].sort((a, b) => a.strMeal.localeCompare(b.strMeal));
+  const sorterade = allMeals.sort((a, b) => a.strMeal.localeCompare(b.strMeal));
   const forstaFem = sorterade.slice(0, 5);
   console.log("\n***Här är de fem första rätterna i bokstavsordning:***");
   forstaFem.forEach(meal => console.log(meal.strMeal));
@@ -33,29 +32,9 @@ function printMealsByCategory(allMeals, givenCategory) {
   console.log(`Totalt antal rätter i kategorin "${givenCategory}": ${filteredMeals.length}`);
 }
 
-// NY FUNKTION: räkna antal måltider per kategori och skriv ut objektet
-function countMealsPerCategory(allMeals) {
-  const categoryCount = allMeals.reduce((acc, meal) => {
-    const category = meal.strCategory || "okänd";
-    acc[category] = (acc[category] || 0) + 1;
-    return acc;
-  }, {});
-
-  console.log("\n***Antal rätter per kategori:***");
-  console.log(categoryCount);
-  return categoryCount;
-}
-
 // kör allt och skriv ut funktionerna
 (async function main() {
-  try {
-    const allMeals = await fetchAllaRatter(); // Hämtar alla rätter EN gång
-
-    printFirstFiveMeals(allMeals);
-    printMealsByCategory(allMeals, "vegetarian"); // Exempel: "vegetarian"
-    countMealsPerCategory(allMeals); // Ny: räknar och skriver ut antal per kategori
-
-  } catch (err) {
-    console.error("Något gick fel:", err);
-  }
+  const allMeals = await fetchAllaRatter(); // Hämtar alla rätter EN gång
+  printFirstFiveMeals(allMeals);
+  printMealsByCategory(allMeals, "vegetarian"); // Exempel: "vegetarian"
 })();
