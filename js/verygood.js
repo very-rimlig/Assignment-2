@@ -1,9 +1,6 @@
-/* det här är kod som kollar och skriver ut rätter som har mjölk,
- smör eller grädde <-- fungerar
-
 const letters = "abcdefghijklmnopqrstuvwxyz".split("");
 
-// samma funktion som hämtar rätterna
+// --- fetchAllaRatter (en gemensam implementation, används av alla funktioner) ---
 async function fetchAllaRatter() {
   const allMeals = [];
   for (const letter of letters) {
@@ -16,7 +13,10 @@ async function fetchAllaRatter() {
   return allMeals;
 }
 
-// funktion som kollar om rätter innehåller "cream" och/eller "milk"
+/* ------------------------
+   Funktion 1 (oförändrad)
+   — kollar och skriver ut rätter som har milk, butter eller cream
+   ------------------------ */
 async function findCreamOrMilkOrButter() {
   const allMeals = await fetchAllaRatter();
 
@@ -58,28 +58,10 @@ async function findCreamOrMilkOrButter() {
   });
 }
 
-// Kör funktionen
-findCreamOrMilkOrButter();
- */
-
-/*här är koden för uppgiften att gruppera genom metoden groupBy
-<-fungerar bra!
-
-const letters = "abcdefghijklmnopqrstuvwxyz".split("");
-//samma funktion som hämtar och returnerar alla rätter oavsett första bokstav/url
-async function fetchAllaRatter() {
-  const allMeals = [];
-  for (const letter of letters) {
-    const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${letter}`);
-    const data = await res.json();
-    if (data.meals) {
-      allMeals.push(...data.meals);
-    }
-  }
-  return allMeals;
-}
-
-// funktion som grupperar genom metodden groupBy, alltså grupperar items efter nyckel
+/* ------------------------
+   Funktion 2 (oförändrad)
+   — groupBy och funcGroupByArea
+   ------------------------ */
 function groupBy(items, key) {
   return items.reduce((acc, item) => {
     const groupKey = item[key] || "okänd";
@@ -89,7 +71,6 @@ function groupBy(items, key) {
   }, {});
 }
 
-// funktion som grupperar per land/area
 async function funcGroupByArea() {
   const allMeals = await fetchAllaRatter();
   const grouped = groupBy(allMeals, "strArea");
@@ -100,34 +81,15 @@ async function funcGroupByArea() {
   });
 
   if (grouped["British"]) {
-    console.log("\nEngelska rätter, de tio första:");
+    console.log("\n*****ENGELSKA RÄTTER, DE TIO FÖRSTA:*****");
     grouped["British"].slice(0, 10).forEach(m => console.log(m.strMeal));
   }
 }
 
-funcGroupByArea();
-
-*/
-
-/* här gör jag en kod som räknar antalet gånger varje ingridiens
-förekommer (i alla objekts listor) genom att "reducera alla
-ingridienser till ett objekt - alltså jag skapar en frekvenskarta
-över ingridienserna genom att kombinera flatMap och reduce
- */
-const letters = "abcdefghijklmnopqrstuvwxyz".split("");
-
-// funktion som hämtar alla rätter
-async function fetchAllaRatter() {
-  const allMeals = [];
-  for (const letter of letters) {
-    const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${letter}`);
-    const data = await res.json();
-    if (data.meals) {
-      allMeals.push(...data.meals);
-    }
-  }
-  return allMeals;
-}
+/* ------------------------
+   Funktion 3 (oförändrad)
+   — frekvenskarta per meal (byggd via extractIngredients + flatMap + reduce)
+   ------------------------ */
 
 // plockar ut alla ingredienser från en rätt och normaliserar (trim + lowercase)
 function extractIngredients(meal) {
@@ -140,7 +102,6 @@ function extractIngredients(meal) {
   }
   return ingredients;
 }
-
 
 // funktion som räknar varje ingridiens max 1 gång per rätt (count per meal)
 async function buildIngredientFrequency_perMeal() {
@@ -161,21 +122,31 @@ async function buildIngredientFrequency_perMeal() {
   return freq;
 }
 
-/* ---------- Hjälp: skriv ut topp N ingredienser i fallande ordning ---------- */
+/* Hjälp: skriv ut topp N ingredienser i fallande ordning */
 function printTopN(freqMap, n = 1000) {
   const sorted = Object.entries(freqMap)
     .sort((a, b) => b[1] - a[1])
     .slice(0, n);
-  console.log(`Antal rätter varje ingrediens förekommer i:`);
+  console.log(`\n ******ANTAL RÄTTER PER KATEGORI:*****`);
   sorted.forEach(([ing, count]) => console.log(`${ing}: ${count}`));
 }
 
-/* ---------- Kör och visa resultatet ---------- */
+/* ------------------------
+   Kör allt i logisk ordning
+   (anropar dina befintliga funktioner, utan att ändra dem)
+   ------------------------ */
 (async function main() {
   try {
-    console.log("\nBygger frequency map (per meal / max 1 per meal) ...");
+    // 1) lista rätter som innehåller cream/milk/butter
+    await findCreamOrMilkOrButter();
+
+    // 2) gruppera per area och skriv ut exempel
+    await funcGroupByArea();
+
+    // 3) bygg frekvenskarta och skriv ut (valfritt: printTopN)
     const freqPerMeal = await buildIngredientFrequency_perMeal();
-    printTopN(freqPerMeal);
+    printTopN(freqPerMeal, 20);
+
   } catch (err) {
     console.error("Något gick fel:", err);
   }
