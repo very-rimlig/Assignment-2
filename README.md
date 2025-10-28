@@ -116,6 +116,6 @@ Förklaring av centrala funktioner/kod:
 - Flatar ut dessa och räknar förekomst över alla rätter med reduce för att bygga en frekvenskarta { ingrediens: antalRätter }.
 - printTopN(freqMap, n) sorterar frekvenskartans entries i fallande ordning och skriver ut de n vanligaste ingredienserna.
 
-6. Konsolutskrifter och felhantering:
+6. Konsolutskrifter och felmeddelanden:
 - main() anropar funktionerna i ordning: först findCreamOrMilkOrButter(), sedan funcGroupByArea(), sedan frekvensbygget + printTopN().
 - Alla utskrifter går till console.log. Eventuella fel i nätverk eller runtime fångas i catch och skrivs ut med console.error("Något gick fel:", err).
